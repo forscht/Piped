@@ -1,2 +1,2 @@
 # piped
-Open Source 100% Anonymous File Sharing.
+100% Anonymous Open Source File Sharing.
