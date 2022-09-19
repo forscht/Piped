@@ -1,5 +1,4 @@
 const knex = require('./struct/knex')
-const HTTP_CODE = require('./constants/httpCode')
 
 class Journal {
     constructor(fs) {

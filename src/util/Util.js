@@ -1,5 +1,20 @@
 class Util {
     /**
+     * Pretty print error
+     * @param error
+     * @param extra
+     */
+    static errorPrint(error, extra = {}) {
+        let err = `${'=== Begin Error ===\n---\n'
+        + 'Error: '}${error.message}\n`
+        const extraArray = Object.keys(extra).map((e) => `${e} : ${extra[e]}`).join('\n')
+        err += extraArray
+        err += `\nStack: ${error.stack}\n---\n=== End Error ===`
+
+        console.error(err)
+    }
+
+    /**
      * Parse "Range" header `str` relative to the given file `size`.
      *
      * @param {Number} size

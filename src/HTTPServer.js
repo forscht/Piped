@@ -33,6 +33,7 @@ class HTTPServer {
             else this._handleStatic(req, res)
             // ^^ Handle static files
         } catch (err) {
+            Util.errorPrint(err)
             res
                 .writeHead(HTTP_CODE.INTERNAL_SERVER_ERROR)
                 .end()
