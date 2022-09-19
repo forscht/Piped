@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Best Protected Open Source File Sharing",
   "main": "index.js",
+  "engines": {
+    "node": "16.x"
+  },
   "scripts": {
     "migration:latest": "knex migrate:latest",
     "migration:up": "knex migrate:up",
