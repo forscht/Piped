@@ -1,0 +1,16 @@
+version: '3.4'
+
+services:
+  postgres:
+    container_name: piped-postgres
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5430:5432"
+    environment:
+      POSTGRES_USER: piped
+      POSTGRES_DB: piped
+      POSTGRES_PASSWORD: piped
+volumes:
+  postgres_data:

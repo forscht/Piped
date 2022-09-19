@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+  <meta name="description" content="Best Protected Open Source File Sharing"/>
+  <meta name="keywords" content="discord,secure,file sharing,open source"/>
+  <meta name="theme-color" content="#212529"/>
+  <link rel="shortcut icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" sizes="196x196" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+
+  <title>Piped - Best Protected Open Source File Sharing</title>
+
+  <link href="https://unpkg.com/nes.css@latest/css/nes.min.css" rel="stylesheet"/>
+  <link href="./style.css" rel="stylesheet"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="Piped"/>
+  <meta property="og:url" content="https://piped.cc/"/>
+  <meta property="og:description" content="Best Protected Open Source File Sharing"/>
+
+  <script>
+    if (window.navigator.userAgent.toLocaleLowerCase().indexOf('trident') !== -1) {
+      window.alert('IE is not supported on this page.')
+    }
+
+  </script>
+</head>
+
+<body>
+<div id="nescss">
+  <header :class="{ sticky: scrollPos > 50 }">
+    <div class="container">
+      <div class="nav-brand">
+        <a href="https://github.com/forscht/Piped">
+          <h1>Piped</h1>
+        </a>
+        <p>Best Protected Open Source File Sharing.</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <main class="main-content">
+      <section class="topic">
+        <h2 id="about"><a href="#about">#</a>Anonymous File Upload</h2>
+        <label id='file-input-label' class="nes-btn" style="width: 100%;"><span>Select Your File</span><input id='file-input' type="file"></label>
+        <progress id='progress-bar' class="nes-progress is-primary;" value="50" max="100" style="display: none"></progress>
+        <button id='copy-button' type="button" class="nes-btn is-success" style="width: 100%;display: none">Copy Link To Clipboard</button>
+        <button id='failed-button' type="button" class="nes-btn is-disabled" style="width: 100%;display: none">File Upload Failed</button>
+      </section>
+
+      <section class="topic" style="font-size: 0.8rem">
+        <h2><a href="">#</a>Reasons To Use Piped?</h2>
+        <p>Piped is open source.</p>
+        <p>Files will be encrypted using AES-256-CTR with unique encryption key per file and stored on discord in 8 mb chunks.(unique iv per chunk)</p>
+        <p>Piped is designed to never store or log the decryption key for the file. Once you upload the file, you will receive the unique URL to download the file which contains decryption key. if you lose the decryption key, file can't be accessed by us or other third parties.</p>
+        <i style="color: #007bff">Sample URL -> piped.cc/download/{fileId}/{decryptionKey}</i>
+      </section>
+      <section class="topic" style="font-size: 0.8rem">
+        <h2><a href="">#</a>FAQ.</h2>
+        <b>How do I share my files?</b> <p>Click the upload button to select one or more files. Once the upload is finished, we will issue you a unique URL which you can share with others who can then download the file instantly</p>
+        <b>How long will my files be online?</b> <p>If file is not accessed within a year. It will be deleted..</p>
+        <b>What are the limit of uploads?</b> <p>You are free to upload as much as you want.</p>
+        <b>Any restrictions on downloads?</b> <p>No. We do not enforce any form of bandwidth limitations on downloads.</p>
+      </section>
+    </main>
+
+    <footer style="font-size: 2rem">
+        <a href="https://github.com/forscht/Piped" target="_blank" rel="noopener"><i class="nes-octocat animate is-medium"></i>Fork Me On GitHub</a>
+    </footer>
+
+  </div>
+</div>
+<script>
+  const progressBar = document.getElementById('progress-bar')
+  const fileInput = document.getElementById('file-input')
+  const fileInputLabel = document.getElementById('file-input-label')
+  const failedButton = document.getElementById('failed-button')
+  const copyButton = document.getElementById('copy-button')
+  let downloadURL
+  fileInput.addEventListener('change', () => upload())
+
+  // Set progress bar
+  function setProgress(loaded, total) {
+    progressBar.value = (total === 0) ? 0 : loaded / total * 100
+  }
+
+  function hide(element) {
+    element.style.display = 'none'
+  }
+
+  function show(element){
+    element.style.removeProperty('display')
+  }
+
+  function upload() {
+    show(progressBar)
+    hide(fileInputLabel)
+    const body = fileInput.files[0]
+    const xhr = new XMLHttpRequest()
+    const path = location.href.replace(/\/$/, '') + '/upload/' + body.name
+    xhr.open('POST', path, true)
+
+    xhr.upload.onprogress = function (e) {
+      console.log(e.loaded, e.total)
+      setProgress(e.loaded, e.total)
+    }
+    xhr.upload.onload = function (e) {
+      if (xhr.status === 200) {
+        setProgress(e.loaded, e.total)
+      }
+    }
+    xhr.onload = function () {
+      if (xhr.status !== 200) {
+        hide(progressBar)
+        hide(fileInputLabel)
+        hide(copyButton)
+        show(failedButton)
+      } else {
+        const resp = JSON.parse(xhr.response)
+        downloadURL = location.href.replace(/\/$/, '') + '/download/' + resp.file.id + '/' + resp.file.secret
+        copyButton.addEventListener('click', () => {
+          copyTextToClipboard(downloadURL)
+        })
+        hide(progressBar)
+        hide(fileInputLabel)
+        show(copyButton)
+      }
+    }
+    xhr.onerror = function () {
+      hide(progressBar)
+      hide(fileInputLabel)
+      hide(copyButton)
+      show(failedButton)
+    }
+    xhr.send(body)
+  }
+
+  function fallbackCopyTextToClipboard(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+
+    // Avoid scrolling to bottom
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      const successful = document.execCommand('copy');
+      const msg = successful ? 'successful' : 'unsuccessful';
+      console.log('Fallback: Copying text command was ' + msg);
+    } catch (err) {
+      console.error('Fallback: Oops, unable to copy', err);
+    }
+
+    document.body.removeChild(textArea);
+  }
+
+  function copyTextToClipboard(text) {
+    if (!navigator.clipboard) {
+      fallbackCopyTextToClipboard(text);
+      return;
+    }
+    navigator.clipboard.writeText(text).then(function() {
+      console.log('Async: Copying to clipboard was successful!');
+    }, function(err) {
+      console.error('Async: Could not copy text: ', err);
+    });
+  }
+
+</script>
+</body>
+</html>

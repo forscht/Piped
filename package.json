@@ -1,0 +1,33 @@
+{
+  "name": "piped",
+  "version": "1.0.0",
+  "description": "Best Protected Open Source File Sharing",
+  "main": "index.js",
+  "scripts": {
+    "migration:latest": "knex migrate:latest",
+    "migration:up": "knex migrate:up",
+    "migration:down": "knex migrate:down",
+    "migration:make": "knex migrate:make",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:forscht/piped.git"
+  },
+  "author": "Darshan Hihoriya <darshanhihoriya@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@forscht/eslint-config": "1.0.0"
+  },
+  "eslintConfig": {
+    "extends": "@forscht"
+  },
+  "dependencies": {
+    "@discordjs/rest": "^1.1.0",
+    "dotenv": "^16.0.2",
+    "knex": "^2.3.0",
+    "pg": "^8.8.0",
+    "uuid": "^9.0.0",
+    "fastify": "^4.6.0"
+  }
+}
