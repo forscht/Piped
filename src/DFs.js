@@ -6,7 +6,7 @@ const uuid = require('uuid').v4
 const AsyncStreamProcessor = require('./util/AsyncStreamProcessor')
 const StreamChunker = require('./util/StreamChunker')
 
-const DEFAULT_BLOCK_SIZE = 7864320 // 7.5MB
+const DEFAULT_BLOCK_SIZE = 25165824 // 24 MB
 const DEFAULT_ENCRYPTION = 'aes-256-ctr'
 
 class DiscordFileSystem {
